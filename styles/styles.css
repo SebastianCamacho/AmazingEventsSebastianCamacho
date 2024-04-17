@@ -1,0 +1,51 @@
+
+
+nav{
+    height: 10vh;
+    background-color: #1B1A17;
+}
+.nav-link, .checks label, footer> div {
+    color: white;
+}
+.nav-link:hover{
+color: #F0A500;
+}
+.carousel-item{
+    height: 60vh;
+}
+
+.checks{
+background-color: #F0A500;
+}
+
+
+.card div a{
+    background-color: #F0A500;
+    border-color: #e79f02;
+    color: white;
+}
+.card div a:hover{
+    background-color: #F4C14F;
+    border-color: white;
+}
+.card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.card{
+    box-shadow: 10px 5px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+footer> div{
+    background-color: #1B1A17;
+}
+
+
+.bor{
+    border: solid 1px red;
+
+}
+
+
