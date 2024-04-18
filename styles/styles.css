@@ -1,5 +1,8 @@
 
-
+.row{
+    margin-left: 0;
+    margin-right: 0;
+}
 nav{
     height: 10vh;
     background-color: #1B1A17;
@@ -9,10 +12,26 @@ nav{
 }
 .nav-link:hover{
 color: #F0A500;
+
 }
+
+
 .carousel-item{
     height: 60vh;
 }
+
+.carousel-item img{
+    width:100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-caption h1{
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+
 
 .checks{
 background-color: #F0A500;
@@ -28,15 +47,20 @@ background-color: #F0A500;
     background-color: #F4C14F;
     border-color: white;
 }
+.card{
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3);
+
+}
+.card img{
+    height: 30%;
+    object-fit: fill;
+}
 .card-body{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
-.card{
-    box-shadow: 10px 5px 10px rgba(0, 0, 0, 0.3);
 
-}
 
 footer> div{
     background-color: #1B1A17;
@@ -45,6 +69,45 @@ footer> div{
 
 .bor{
     border: solid 1px red;
+
+}
+
+
+form{
+    border: 1px solid #F0A500;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+.btn-form button{
+    background-color: #A06E00;
+    border-color: #A06E00;
+    color: white;
+}
+.btn-form button:hover{
+    background-color: #F4C14F;
+    border-color: white;
+}
+
+
+.form{
+background-color: #F0A500;
+}
+
+textarea{
+    max-height: 20vh;
+}
+
+table thead tr:nth-child(1) th{
+    background-color: #F0A500;
+    color: white;
+    text-align: center;
+    border-bottom: 2px solid black;
+}
+
+table thead tr:nth-child(2) th{
+    background-color: #f7e0ae;
+    text-align: center;
 
 }
 
