@@ -258,21 +258,112 @@ function createCard(evento) {
   cardTextP.textContent = evento.descripción;
   priceElementH5.textContent = "$" + evento.precio;
 
+  //AÑADIR EVENTO A BOTON
+
+
+
+
+
+
+
   // Return the complete card element
   return divContTarjeta;
 }
 
-const container = document.getElementById("contTarjetas2");
 
+function createCheck(categoria) {
+
+  //capitalizar y quitar espacios
+  let id=capitalizarYQuitarEspacios(categoria)
+
+  // Crear el div contenedor principal
+  let divContainer = document.createElement("div");
+  divContainer.className = "form-check form-check-inline";
+
+  // Crear el input checkbox
+  let inputCheckbox = document.createElement("input");
+  inputCheckbox.className = "form-check-input";
+  inputCheckbox.type = "checkbox";
+  inputCheckbox.id = id;
+  inputCheckbox.value = id;
+
+  // Crear el label
+  let label = document.createElement("label");
+  label.className = "form-check-label";
+  label.setAttribute("for", id);
+  label.textContent = categoria;
+
+  // Añadir el input y el label al div contenedor
+  divContainer.appendChild(inputCheckbox);
+  divContainer.appendChild(label);
+
+  return divContainer
+
+}
+
+const containerTarjetas = document.getElementById("contTarjetas2");
+const containerChecks = document.getElementById("containerChecks2");
 const fechaActual = new Date(Datos.fechaActual);
 
-for (let index = 0; index < Datos.eventos.length; index++) {
-  const fechaEvento = new Date(Datos.eventos[index].fecha);
+function obtenerEventos(events) {
+  let auxEvents = [];
+  for (let index = 0; index < events.length; index++) {
+    const fechaEvento = new Date(events[index].fecha);
+    if (fechaActual.getTime() <= fechaEvento.getTime()) {
+      auxEvents.push(events[index]);
+    }
+  }
+  return auxEvents;
+}
 
-  if (fechaActual.getTime() <= fechaEvento.getTime()) {
-    const card1 = createCard(Datos.eventos[index]);
-    container.appendChild(card1);
+function pintarTarjetas(informacion) {
+  containerTarjetas.innerHTML = "";
+  for (let index = 0; index < informacion.length; index++) {
+    const card1 = createCard(informacion[index]);
+    containerTarjetas.appendChild(card1);
+  }
+}
+function pintarChecks(listaCategorias) {
+  containerChecks.innerHTML = "";
+  for (let index = 0; index < listaCategorias.length; index++) {
+    const check = createCheck(listaCategorias[index]);
+    containerChecks.appendChild(check);
   }
 }
 
-console.log("Hola mundo up");
+function obtenerCategorias(eventos) {
+  return eventos.reduce((categorias, evento) => {
+    if (!categorias.includes(evento.categoría)) {
+      categorias.push(evento.categoría);
+    }
+    return categorias;
+  }, []);
+}
+
+function capitalizarYQuitarEspacios(str) {
+  // Capitalizar cada palabra
+  let capitalizado = str
+    .split(" ")
+    .map((palabra) => {
+      return palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase();
+    })
+    .join(" ");
+
+  // Quitar todos los espacios
+  let sinEspacios = capitalizado.replace(/\s+/g, "");
+
+  return sinEspacios;
+}
+
+
+
+let currentEvents = obtenerEventos(Datos.eventos);
+let currentCategorias = obtenerCategorias(currentEvents);
+console.log(currentEvents);
+console.log(currentCategorias);
+pintarChecks(currentCategorias);
+pintarTarjetas(currentEvents);
+
+
+
+

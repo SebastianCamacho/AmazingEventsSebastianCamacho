@@ -196,7 +196,35 @@ let Datos = {
   ],
 };
 
-function createCard(evento) {
+let busqueda = document.getElementById("searchHome");
+busqueda.addEventListener("input", (e) => {
+  filtroSearch(e.target.value);
+});
+
+function filtroSearch(valor) {
+  let filtro = [];
+  let cheks = filtrarCategoria();
+  if (cheks.length < 1) {
+    //FILTRAR TODOS LOS EVENTOS
+    filtro = Datos.eventos.filter(
+      (event) =>
+        event.nombre.toLowerCase().includes(valor.toLowerCase()) ||
+        event.descripción.toLowerCase().includes(valor.toLowerCase())
+    );
+    console.log(filtro);
+  } else {
+    //FILTRAR EVENTOS FILTRADOS POR LOS CHECKS
+    console.log(cheks)
+    filtro = cheks.filter(
+      (event) =>
+        event.nombre.toLowerCase().includes(valor.toLowerCase()) ||
+        event.descripción.toLowerCase().includes(valor.toLowerCase())
+    );
+  }
+  pintarTarjetas(filtro);
+}
+
+function createCard(infoEvento) {
   // CREEAR LOS ELEMENTOS HTML
   const divContTarjeta = document.createElement("div");
   const card = document.createElement("div");
@@ -234,10 +262,10 @@ function createCard(evento) {
   detailsCol.classList.add("col");
   detailsButtonA.classList.add("btn");
   detailsButtonA.textContent = "Details";
-  detailsButtonA.setAttribute("href", evento._id);
+  detailsButtonA.setAttribute("href", infoEvento._id);
 
   // Set image source and alt text
-  image.setAttribute("src", evento.imagen);
+  image.setAttribute("src", infoEvento.imagen);
   image.setAttribute("alt", "...");
 
   divContTarjeta.appendChild(card);
@@ -254,18 +282,119 @@ function createCard(evento) {
   detailsCol.appendChild(detailsButtonA);
 
   // ENVIAR DATOS
-  cardTitleH5.textContent = evento.nombre;
-  cardTextP.textContent = evento.descripción;
-  priceElementH5.textContent = "$" + evento.precio;
+  cardTitleH5.textContent = infoEvento.nombre;
+  cardTextP.textContent = infoEvento.descripción;
+  priceElementH5.textContent = "$" + infoEvento.precio;
 
   // Return the complete card element
   return divContTarjeta;
 }
 
-// Usage example: assuming you have a container div with ID "card-container"
-const container = document.getElementById("contTarjetas");
+function createCheck(categoria) {
+  //capitalizar y quitar espacios
+  let id = capitalizarYQuitarEspacios(categoria);
 
-for (let index = 0; index < Datos.eventos.length; index++) {
-  const card1 = createCard(Datos.eventos[index]);
-  container.appendChild(card1);
+  // Crear el div contenedor principal
+  let divContainer = document.createElement("div");
+  divContainer.className = "form-check form-check-inline";
+
+  // Crear el input checkbox
+  let inputCheckbox = document.createElement("input");
+  inputCheckbox.classList.add("form-check-input", "checkHome");
+  inputCheckbox.type = "checkbox";
+  inputCheckbox.id = id;
+  inputCheckbox.value = categoria;
+
+  // Crear el label
+  let label = document.createElement("label");
+  label.className = "form-check-label";
+  label.setAttribute("for", id);
+  label.textContent = categoria;
+
+  // Añadir el input y el label al div contenedor
+  divContainer.appendChild(inputCheckbox);
+  divContainer.appendChild(label);
+
+  //EVENTO DEL CHECK
+  inputCheckbox.addEventListener("change", (e) => {
+    if (busqueda.value.length<1) {
+        console.log("sin busqueda")
+        let filtro = filtrarCategoria();
+        pintarTarjetas(filtro);
+    } else {
+        console.log("con busqueda")
+        filtroSearch(busqueda.value);
+      
+    }
+    
+  });
+
+  return divContainer;
+}
+
+// Usage example: assuming you have a container div with ID "card-container"
+const containerTarjetas = document.getElementById("contTarjetas");
+const containerChecks = document.getElementById("containerChecks");
+
+function pintarTarjetas(informacion) {
+  containerTarjetas.innerHTML = "";
+  for (let index = 0; index < informacion.length; index++) {
+    const card1 = createCard(informacion[index]);
+    containerTarjetas.appendChild(card1);
+  }
+}
+
+function obtenerCategorias(eventos) {
+  return eventos.reduce((categorias, evento) => {
+    if (!categorias.includes(evento.categoría)) {
+      categorias.push(evento.categoría);
+    }
+    return categorias;
+  }, []);
+}
+
+function capitalizarYQuitarEspacios(str) {
+  // Capitalizar cada palabra
+  let capitalizado = str
+    .split(" ")
+    .map((palabra) => {
+      return palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase();
+    })
+    .join(" ");
+
+  // Quitar todos los espacios
+  let sinEspacios = capitalizado.replace(/\s+/g, "");
+
+  return sinEspacios;
+}
+
+function pintarChecks() {
+  let listaCategorias = obtenerCategorias(Datos.eventos);
+  containerChecks.innerHTML = "";
+  for (let index = 0; index < listaCategorias.length; index++) {
+    const check = createCheck(listaCategorias[index]);
+    containerChecks.appendChild(check);
+  }
+}
+
+pintarChecks();
+pintarTarjetas(Datos.eventos);
+
+function filtrarCategoria() {
+  let listChecked = [];
+  checkboxs = document.getElementsByClassName("checkHome");
+  for (let index = 0; index < checkboxs.length; index++) {
+    if (checkboxs[index].checked) {
+      listChecked.push(checkboxs[index].value);
+    }
+  }
+  let eventosFiltrados = Datos.eventos.filter((event) => {
+    for (let i = 0; i < listChecked.length; i++) {
+      if (listChecked[i] == event.categoría) {
+        return event;
+      }
+    }
+  });
+
+  return eventosFiltrados;
 }
