@@ -201,6 +201,28 @@ busqueda.addEventListener("input", (e) => {
   filtroSearch(e.target.value);
 });
 
+function filtrarCategoria() {
+  let listChecked = [];
+  checkboxs = document.getElementsByClassName("checkHome");
+  for (let index = 0; index < checkboxs.length; index++) {
+    if (checkboxs[index].checked) {
+      listChecked.push(checkboxs[index].value);
+    }
+  }
+  let eventosFiltrados = Datos.eventos.filter((event) => {
+    for (let i = 0; i < listChecked.length; i++) {
+      if (listChecked[i] == event.categoría) {
+        return event;
+      }
+    }
+  });
+  if (listChecked.length < 1) {
+    return Datos.eventos
+  }
+
+  return eventosFiltrados;
+}
+
 function filtroSearch(valor) {
   let filtro = [];
   let cheks = filtrarCategoria();
@@ -221,6 +243,8 @@ function filtroSearch(valor) {
         event.descripción.toLowerCase().includes(valor.toLowerCase())
     );
   }
+
+  
   pintarTarjetas(filtro);
 }
 
@@ -262,7 +286,7 @@ function createCard(infoEvento) {
   detailsCol.classList.add("col");
   detailsButtonA.classList.add("btn");
   detailsButtonA.textContent = "Details";
-  detailsButtonA.setAttribute("href", infoEvento._id);
+  detailsButtonA.setAttribute("href","/details.html?id="+infoEvento._id);
 
   // Set image source and alt text
   image.setAttribute("src", infoEvento.imagen);
@@ -377,24 +401,9 @@ function pintarChecks() {
   }
 }
 
+
+
 pintarChecks();
 pintarTarjetas(Datos.eventos);
 
-function filtrarCategoria() {
-  let listChecked = [];
-  checkboxs = document.getElementsByClassName("checkHome");
-  for (let index = 0; index < checkboxs.length; index++) {
-    if (checkboxs[index].checked) {
-      listChecked.push(checkboxs[index].value);
-    }
-  }
-  let eventosFiltrados = Datos.eventos.filter((event) => {
-    for (let i = 0; i < listChecked.length; i++) {
-      if (listChecked[i] == event.categoría) {
-        return event;
-      }
-    }
-  });
 
-  return eventosFiltrados;
-}

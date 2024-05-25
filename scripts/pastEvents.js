@@ -196,6 +196,68 @@ let Datos = {
   ],
 };
 
+
+const containerTarjetas = document.getElementById("contTarjetas3");
+const containerChecks = document.getElementById("containerChecks3");
+const fechaActual = new Date(Datos.fechaActual);
+
+let currentEvents = obtenerEventos(Datos.eventos);
+let currentCategorias = obtenerCategorias(currentEvents);
+
+let busqueda = document.getElementById("searchPast");
+busqueda.addEventListener("input", (e) => {
+  filtroSearch(e.target.value);
+});
+
+function filtrarCategoria() {
+  let listChecked = [];
+  checkboxs = document.getElementsByClassName("checkPast");
+  for (let index = 0; index < checkboxs.length; index++) {
+    if (checkboxs[index].checked) {
+      listChecked.push(checkboxs[index].value);
+    }
+  }
+  let eventosFiltrados = currentEvents.filter((event) => {
+    for (let i = 0; i < listChecked.length; i++) {
+      if (listChecked[i] == event.categoría) {
+        return event;
+      }
+    }
+  });
+  if (listChecked.length < 1) {
+    return Datos.eventos
+  }
+
+  return eventosFiltrados;
+}
+
+
+function filtroSearch(valor) {
+  let filtro = [];
+  let cheks = filtrarCategoria();
+  if (cheks.length < 1) {
+    //FILTRAR TODOS LOS EVENTOS
+    filtro = Datos.eventos.filter(
+      (event) =>
+        event.nombre.toLowerCase().includes(valor.toLowerCase()) ||
+        event.descripción.toLowerCase().includes(valor.toLowerCase())
+    );
+    console.log(filtro);
+  } else {
+    //FILTRAR EVENTOS FILTRADOS POR LOS CHECKS
+    console.log(cheks)
+    filtro = cheks.filter(
+      (event) =>
+        event.nombre.toLowerCase().includes(valor.toLowerCase()) ||
+        event.descripción.toLowerCase().includes(valor.toLowerCase())
+    );
+  }
+  
+  pintarTarjetas(filtro);
+}
+
+
+
 function createCard(evento) {
   // CREEAR LOS ELEMENTOS HTML
   const divContTarjeta = document.createElement("div");
@@ -234,7 +296,7 @@ function createCard(evento) {
   detailsCol.classList.add("col");
   detailsButtonA.classList.add("btn");
   detailsButtonA.textContent = "Details";
-  detailsButtonA.setAttribute("href", evento._id);
+  detailsButtonA.setAttribute("href","/details.html?id="+evento._id);
 
   // Set image source and alt text
   image.setAttribute("src", evento.imagen);
@@ -272,10 +334,10 @@ function createCheck(categoria) {
 
   // Crear el input checkbox
   let inputCheckbox = document.createElement("input");
-  inputCheckbox.className = "form-check-input";
+  inputCheckbox.classList.add("form-check-input", "checkPast");
   inputCheckbox.type = "checkbox";
   inputCheckbox.id = id;
-  inputCheckbox.value = id;
+  inputCheckbox.value = categoria;
 
   // Crear el label
   let label = document.createElement("label");
@@ -287,14 +349,23 @@ function createCheck(categoria) {
   divContainer.appendChild(inputCheckbox);
   divContainer.appendChild(label);
 
+  // AÑADIR EVENTO
+  inputCheckbox.addEventListener("change", (e) => {
+    if (busqueda.value.length<1) {
+        console.log("sin busqueda")
+        let filtro = filtrarCategoria();
+        pintarTarjetas(filtro);
+    } else {
+        console.log("con busqueda")
+        filtroSearch(busqueda.value);
+      
+    }
+  });
+
+
   return divContainer
 
 }
-
-const containerTarjetas = document.getElementById("contTarjetas3");
-const containerChecks = document.getElementById("containerChecks3");
-
-const fechaActual = new Date(Datos.fechaActual);
 
 function obtenerEventos(events) {
   let auxEvents = [];
@@ -347,9 +418,5 @@ function pintarChecks(listaCategorias) {
   }
 }
 
-let currentEvents = obtenerEventos(Datos.eventos);
-let currentCategorias = obtenerCategorias(currentEvents);
-console.log(currentEvents);
-console.log(currentCategorias);
 pintarChecks(currentCategorias);
 pintarTarjetas(currentEvents);
