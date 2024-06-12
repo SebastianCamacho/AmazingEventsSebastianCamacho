@@ -219,8 +219,7 @@ let asistenciaValor = document.getElementById("asistenciaValorDetails");
 
 console.log(imagen);
 
-titulo.innerHTML = evento.nombre
-  .split(" ")
+titulo.innerHTML = evento.nombre.split(" ")
   .map((palabra) => {
     return palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase();
   })
