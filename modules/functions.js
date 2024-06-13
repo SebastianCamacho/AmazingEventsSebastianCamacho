@@ -190,7 +190,7 @@ export function filtroSearch(valor, contTar, Data, page) {
 
   if (filtro.length < 1){
     contTar.innerHTML =`<div class="no-hay-elementos">
-    <h3>Sorry, no matching items found.</h3>
+    <h3>Sorry, no matching events found.</h3>
     <p>Please try a different search term or refine your filters.</p>
   </div>`
     console.log(contTar);
@@ -215,4 +215,27 @@ function capitalizarYQuitarEspacios(str) {
   let sinEspacios = capitalizado.replace(/\s+/g, "");
 
   return sinEspacios;
+}
+
+export function obtenerEventos(fechaActual,events,passed) {
+  let auxEvents = [];
+  if(passed){
+    for (let index = 0; index < events.length; index++) {
+      const fechaEvento = new Date(events[index].date);
+      if (fechaActual.getTime() > fechaEvento.getTime()) {
+        auxEvents.push(events[index]);
+      }
+    }
+    return auxEvents;
+
+  }else{
+    for (let index = 0; index < events.length; index++) {
+      const fechaEvento = new Date(events[index].date);
+      if (fechaActual.getTime() < fechaEvento.getTime()) {
+        auxEvents.push(events[index]);
+      }
+    }
+    return auxEvents;
+  }
+
 }

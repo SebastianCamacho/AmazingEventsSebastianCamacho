@@ -6,11 +6,11 @@ const containerTarjetas = document.getElementById("contTarjetas2");
 const containerChecks = document.getElementById("containerChecks2");
 let fechaActual;
 
-let currentEvents;
+let upComingEvents;
 let busqueda = document.getElementById("searchUp");
 
 busqueda.addEventListener("input", (e) => {
-  miModule.filtroSearch(e.target.value, containerTarjetas,currentEvents, "Past");
+  miModule.filtroSearch(e.target.value, containerTarjetas,upComingEvents, "Past");
 });
 
 consultarEventos();
@@ -22,25 +22,15 @@ function consultarEventos() {
       Datos.eventos=data.events
       Datos.fechaActual=data.currentDate
       fechaActual = new Date(Datos.fechaActual);
-      currentEvents = obtenerEventos(Datos.eventos);
-      let currentCategorias = miModule.obtenerCategorias(currentEvents)
-      miModule.pintarChecks(containerChecks,currentCategorias,busqueda, currentEvents,containerTarjetas,"Past");
-      miModule.pintarTarjetas(containerTarjetas, currentEvents);
+      upComingEvents = miModule.obtenerEventos(fechaActual,Datos.eventos,false);
+      let currentCategorias = miModule.obtenerCategorias(upComingEvents)
+      miModule.pintarChecks(containerChecks,currentCategorias,busqueda, upComingEvents,containerTarjetas,"Past");
+      miModule.pintarTarjetas(containerTarjetas, upComingEvents);
  
     })
     .catch((error) => console.error(error));
   console.log("CONSULTA");
-  console.log(currentEvents);
+  console.log(upComingEvents);
 
 }
 
-function obtenerEventos(events) {
-  let auxEvents = [];
-  for (let index = 0; index < events.length; index++) {
-    const fechaEvento = new Date(events[index].date);
-    if (fechaActual.getTime() < fechaEvento.getTime()) {
-      auxEvents.push(events[index]);
-    }
-  }
-  return auxEvents;
-}
