@@ -14,9 +14,14 @@ function consultarEventos() {
       Datos.fechaActual = data.currentDate;
       fechaActual = new Date(Datos.fechaActual);
       pastEvents = miModule.obtenerEventos(fechaActual, Datos.eventos, true);
-      upComingEvents = miModule.obtenerEventos(fechaActual, Datos.eventos, false);
-      console.log(upComingEvents);
-      inicializar();
+      upComingEvents = miModule.obtenerEventos(
+        fechaActual,
+        Datos.eventos,
+        false
+      );
+      inicializarTabla1();
+      inicializarTabla(upComingEvents, true);
+      inicializarTabla(pastEvents, false);
     })
     .catch((error) => console.error(error));
   console.log("CONSULTA");
@@ -54,43 +59,95 @@ function obtenerMaxCapacidad(events) {
     events[0]
   );
 }
-function clasificarEventosXcategoria(events) {
-    const categories = {};
 
-    events.forEach(event => {
-        if (!categories[event.category]) {
-            categories[event.category] = [];
-        }
-        categories[event.category].push(event);
-    });
-
-    return categories;
-}
-
-
-
-function inicializar() {
-  const tabla1=document.getElementById("tabla1")
-  const eventosConPorcentajeAsistencia = calculateAttendancePercentage(pastEvents);
-  const maxPorcentajeAsistencia = getEventConMaxProcentajeAsistencia(eventosConPorcentajeAsistencia);
-  const minPorcentajeAsistencia = getEventConMinProcentajeAsistencia(eventosConPorcentajeAsistencia);
+function inicializarTabla1() {
+  const tabla1 = document.getElementById("tabla1");
+  const eventosConPorcentajeAsistencia =
+    calculateAttendancePercentage(pastEvents);
+  const maxPorcentajeAsistencia = getEventConMaxProcentajeAsistencia(
+    eventosConPorcentajeAsistencia
+  );
+  const minPorcentajeAsistencia = getEventConMinProcentajeAsistencia(
+    eventosConPorcentajeAsistencia
+  );
   const eventoMaxCapacidad = obtenerMaxCapacidad(Datos.eventos);
 
-  tabla1.innerHTML=`<tr>
+  tabla1.innerHTML = `<tr>
                                 <td>${maxPorcentajeAsistencia.name}</td>
                                 <td>${minPorcentajeAsistencia.name}</td>
                                 <td>${eventoMaxCapacidad.name}</td>
                             </tr>
                             <tr>
-                                <td>${maxPorcentajeAsistencia.porcentajeAsistencias} %</td>
-                                <td>${minPorcentajeAsistencia.porcentajeAsistencias} %</td>
+                                <td>${maxPorcentajeAsistencia.porcentajeAsistencias.toFixed(
+                                  2
+                                )} %</td>
+                                <td>${minPorcentajeAsistencia.porcentajeAsistencias.toFixed(
+                                  2
+                                )} %</td>
                                 <td>${eventoMaxCapacidad.capacity}</td>
-                            </tr>`
+                            </tr>`;
+}
 
+function calculoTabla(events, future) {
+  let categorias = miModule.obtenerCategorias([...events]);
+  let estadisticasPast = [];
 
-// Uso de la función
-const categorizedEvents = clasificarEventosXcategoria(upComingEvents);
-console.log(categorizedEvents);
+  categorias.forEach((categ) => {
+    let eventoXCategoria = events.filter((event) => event.category === categ);
+    let totalAsistencia = 0,
+      totalCapacidad = 0,
+      totalGanancias = 0;
 
+    if (future) {
+      eventoXCategoria.forEach((evento) => {
+        totalGanancias += evento.estimate * evento.price;
+        totalAsistencia += evento.estimate;
+        totalCapacidad += evento.capacity;
+      });
+    } else {
+      eventoXCategoria.forEach((evento) => {
+        totalGanancias += evento.assistance * evento.price;
+        totalAsistencia += evento.assistance;
+        totalCapacidad += evento.capacity;
+      });
+    }
 
+    let estadisticasXCategoria = {
+      categoria: categ,
+      porcentajeAsistencia: (totalAsistencia / totalCapacidad) * 100,
+      Ganancias: totalGanancias,
+    };
+    estadisticasPast.push(estadisticasXCategoria);
+  });
+
+  return estadisticasPast;
+}
+
+function inicializarTabla(events, future) {
+  let tabla2 = document.getElementById("tabla2");
+  let tabla3 = document.getElementById("tabla3");
+
+  let estadisticas = calculoTabla(events, future);
+  console.log(estadisticas);
+  let n = 1;
+  estadisticas.forEach((stats) => {
+    const fila = document.createElement("tr");
+
+    fila.innerHTML = `
+        <th scope="row">${n}</th>
+        <td>${stats.categoria}</td>
+        <td>$ ${stats.Ganancias}</td>
+        <td>${stats.porcentajeAsistencia.toFixed(2)} %</td>
+        `;
+    n++;
+    if (future) {
+      tabla2.appendChild(fila);
+    } else {
+      tabla3.appendChild(fila);
+    }
+  });
+}
+
+function inicializarTabla3(events) {
+  calculoTabla(events, false);
 }
